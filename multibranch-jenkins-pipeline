@@ -41,6 +41,15 @@ pipeline {
     post {
         success {
             echo 'Testing Done'
+            emailext (
+                subject: "Build succeeded in ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: """
+                Build succeeded on Jenkins job ${env.JOB_NAME} for branch ${env.BRANCH_NAME}.
+                Check console output at ${env.BUILD_URL} to view the results.
+                """,
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: 'maheshbasapur@gmail.com'
+            )
         }
         failure {
             // Send email notification on failure
