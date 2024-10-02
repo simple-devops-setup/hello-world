@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'maven'
+    }
+
+    stages{
+        stage('Checkout') {
+            steps {
+                script {
+                    echo "Checking out branch: ${env.BRANCH_NAME}"
+                }
+                // Checkout the source code from the current branch
+                checkout scm
+            }
+        }
+
+        stage('Build'){
+            steps {
+                sh 'mvn clean install'
+            }
+            post {
+                success {
+                    echo 'Build successful'
+                }
+            }
+        }
+
+        stage('Build docker image'){
+            steps{
+                script{
+                    sh 'docker build -t maheshbasapur81/hello-world .'
+                }
+            }
+        }
+        stage('Push image to Hub'){
+            steps{
+                script{
+                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
+                   
+                        sh 'docker login -u maheshbasapur81 -p ${dockerhubpwd}'
+                        sh 'docker push maheshbasapur81/hello-world'
+                    }
+                }
+            }
+        }
+    }
+}
