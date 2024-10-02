@@ -36,23 +36,23 @@ pipeline {
             steps {
                 sh 'mvn test'
             }
-            post {
-                success {
-                    echo 'Testing Done'
-                }
-            }
-            failure {
-                // Send email notification on failure
-                emailext (
-                    subject: "Build failed in ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                    body: """
-                    Build failed on Jenkins job ${env.JOB_NAME} for branch ${env.BRANCH_NAME}.
-                    Check console output at ${env.BUILD_URL} to view the results.
-                    """,
-                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                    to: 'maheshbasapur@gmail.com'
-                )
-            }
+        }
+    }
+    post {
+        success {
+            echo 'Testing Done'
+        }
+        failure {
+            // Send email notification on failure
+            emailext (
+                subject: "Build failed in ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: """
+                Build failed on Jenkins job ${env.JOB_NAME} for branch ${env.BRANCH_NAME}.
+                Check console output at ${env.BUILD_URL} to view the results.
+                """,
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: 'maheshbasapur@gmail.com'
+            )
         }
     }
 }
