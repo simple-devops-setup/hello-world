@@ -5,8 +5,24 @@ pipeline {
         maven 'maven'
     }
 
+    triggers {
+        // This will scan branches for changes and trigger builds
+        pollSCM('H/5 * * * *')
+    }
+
     stages{
+        stage('Checkout') {
+            steps {
+                script {
+                    echo "Checking out branch: ${env.BRANCH_NAME}"
+                }
+                // Checkout the source code from the current branch
+                checkout scm
+            }
+        }
+
         stage('Build'){
+
             steps {
                 sh 'mvn clean install'
             }
@@ -24,6 +40,18 @@ pipeline {
                 success {
                     echo 'Testing Done'
                 }
+            }
+            failure {
+                // Send email notification on failure
+                emailext (
+                    subject: "Build failed in ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                    body: """
+                    Build failed on Jenkins job ${env.JOB_NAME} for branch ${env.BRANCH_NAME}.
+                    Check console output at ${env.BUILD_URL} to view the results.
+                    """,
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                    to: 'maheshbasapur@gmail.com'
+                )
             }
         }
     }
