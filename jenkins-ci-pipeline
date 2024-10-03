@@ -40,7 +40,7 @@ pipeline {
                    withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
                    
                         sh 'docker login -u maheshbasapur81 -p ${dockerhubpwd}'
-                        sh 'docker push maheshbasapur81/hello-world'
+                        sh 'docker push maheshbasapur81/hello-world -t %GIT_COMMIT%'
                     }
                 }
             }
