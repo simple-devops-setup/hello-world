@@ -32,7 +32,7 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker build -t maheshbasapur81/hello-world::${tag} .'
+                    sh 'docker build -t maheshbasapur81/hello-world:${tag} .'
                 }
             }
         }
@@ -42,7 +42,7 @@ pipeline {
                    withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
                    
                         sh 'docker login -u maheshbasapur81 -p ${dockerhubpwd}'
-                        sh 'docker push maheshbasapur81/hello-world::${tag}'
+                        sh 'docker push maheshbasapur81/hello-world:${tag}'
                     }
                 }
             }
