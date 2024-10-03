@@ -1,10 +1,12 @@
 pipeline {
     agent any
-    
+
     tools {
         maven 'maven'
     }
-
+    environment {
+        tag = sh(returnStdout: true, script: "git rev-parse --short=10 HEAD").trim()
+    }
     stages{
         stage('Checkout') {
             steps {
@@ -30,7 +32,7 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker build -t maheshbasapur81/hello-world:${env.GIT_COMMIT} .'
+                    sh 'docker build -t maheshbasapur81/hello-world::${tag} .'
                 }
             }
         }
@@ -40,7 +42,7 @@ pipeline {
                    withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
                    
                         sh 'docker login -u maheshbasapur81 -p ${dockerhubpwd}'
-                        sh 'docker push maheshbasapur81/hello-world:${env.GIT_COMMIT}'
+                        sh 'docker push maheshbasapur81/hello-world::${tag}'
                     }
                 }
             }
