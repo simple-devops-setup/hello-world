@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HelloWorldController {
 
-    @GetMapping("/hello")
+    @GetMapping("/")
     public String sayHello() {
         return "hello"; // This should resolve to hello.html in the templates folder
     }
